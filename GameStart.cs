@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HelloWorld;
 
-namespace HelloWorld
+namespace HuntTheWumpus
 {
     public class GameMain
     {
         Boolean gameRunning = false;
         Boolean gameStatus;
+
         Dictionary<int, Room> RoomHold = new Dictionary<int, Room>(); // <id, Room>
         Dictionary<int, int> RoomNumbers = new Dictionary<int, int>(); // <id, room number>
 
@@ -19,32 +19,6 @@ namespace HelloWorld
         Bat SuperBats = new Bat();
         Pit Pit1 = new Pit();
         Pit Pit2 = new Pit();
-
-        //some getters for the Rooms, Agent, Wumpus, and Bats. Debug purposes.
-        public Dictionary<int, Room> getRooms()
-        {
-            return RoomHold;
-        }
-        
-        public Agent getAgent()
-        {
-            return JamesBond;
-        }
-
-        public Wumpus getWumpus()
-        {
-            return TheBeast;
-        }
-
-        public Bat getBats()
-        {
-            return SuperBats;
-        }
-
-        public Pit[] getPits()
-        {
-            return new Pit[2] {Pit1, Pit2};
-        }
 
         public void init()
         {
@@ -56,7 +30,7 @@ namespace HelloWorld
 
         private void InitiateRooms()
         {
-            for (int i = 1; i <= 20; i++)
+            for (int i = 1; i < 20; i++)
             {
                 RoomHold.Add(i, new Room());
                 RoomHold[i].setId(i);
@@ -175,42 +149,43 @@ namespace HelloWorld
 
         private void RandomizeRooms()
         {
-            
             Random rand = new Random();
-            int[] roomNumbers = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 };
-            Random rnd = new Random();
 
-            //shuffle numbers 1-20 using the Fisher-Yates shuffle algorithm
-            //this will provide us with the room ids in random order
-            for (int i = roomNumbers.Length; i > 1; i--)
-            {
-                int pos = rnd.Next(i);
-                var x = roomNumbers[i - 1];
-                roomNumbers[i - 1] = roomNumbers[pos];
-                roomNumbers[pos] = x;
-            }            
-
-            //insert shuffled room numbers into the room indexes
+            List<int> RoomsList = new List<int>();
             for (int i = 1; i <= 20; i++)
             {
-                RoomHold[i].setRoomNum(roomNumbers[i-1]);
+                RoomsList.Add(i);
+            }
+
+            for (int i = RoomsList.Count; i <= 1; i--)
+            {
+                int randomIndex = rand.Next(i)+1;
+                int number = RoomsList.IndexOf(randomIndex);
+                RoomsList.Insert(randomIndex, RoomsList.IndexOf(i));
+                RoomsList.Insert(i, number);
+                
+                RoomNumbers.Add(i, number);
+                RoomHold[i].setRoomNum(number);
             }
         }
 
-        //edit to return room when it places creature
-        private Room PlaceCreature(Creature myCreature)
+        private Boolean PlaceCreature(Creature myCreature)
         {
             Random rand = new Random();
-            int randomIndex = rand.Next(1,20);
+            int randomIndex = rand.Next(19) + 1;
 
             if (RoomHold[randomIndex].getCreature() == null)
             {
                 RoomHold[randomIndex].setCreature(myCreature);
-                return RoomHold[randomIndex];
+                if (myCreature.Equals(JamesBond))
+                {
+                    JamesBond.setRoom(RoomHold[randomIndex]);
+                }
+                return false;
             }
             else
             {
-                return null;
+                return true;
             }
         }
 
@@ -221,80 +196,31 @@ namespace HelloWorld
             Boolean batPlaced = true;
             Boolean pit1Placed = true;
             Boolean pit2Placed = true;
-            Room tmp = null;
 
-            //editted to tell the creature what room is is
             while (agentPlaced)
             {
-                tmp = PlaceCreature(JamesBond);
-                if (tmp != null)
-                {
-                    JamesBond.setRoom(tmp);
-                    agentPlaced = false;
-                } 
-                //agentPlaced = PlaceCreature(JamesBond);
+                agentPlaced = PlaceCreature(JamesBond);
             }
 
             while (wumpusPlaced)
             {
-                tmp = PlaceCreature(TheBeast);
-                if (tmp != null)
-                {
-                    TheBeast.setRoom(tmp);
-                    wumpusPlaced = false;
-                } 
-                //wumpusPlaced = PlaceCreature(TheBeast);
+                wumpusPlaced = PlaceCreature(TheBeast);
             }
 
             while (batPlaced)
             {
-                tmp = PlaceCreature(SuperBats);
-                if (tmp != null)
-                {
-                    SuperBats.setRoom(tmp);
-                    batPlaced = false;
-                } 
-                //batPlaced = PlaceCreature(SuperBats);
+                batPlaced = PlaceCreature(SuperBats);
             }
 
             while (pit1Placed)
             {
-                tmp = PlaceCreature(Pit1);
-                if (tmp != null)
-                {
-                    Pit1.setRoom(tmp);
-                    pit1Placed = false;
-                } 
-                //pit1Placed = PlaceCreature(Pit1);
+                pit1Placed = PlaceCreature(Pit1);
             }
 
             while (pit2Placed)
             {
-                tmp = PlaceCreature(Pit2);
-                if (tmp != null)
-                {
-                    Pit2.setRoom(tmp);
-                    pit2Placed = false;
-                } 
-                //pit2Placed = PlaceCreature(Pit2);
+                pit2Placed = PlaceCreature(Pit2);
             }
-
-/*            RoomHold[1].setCreature(JamesBond);
-            JamesBond.setRoom(RoomHold[1]);
-
-            RoomHold[2].setCreature(TheBeast);
-
-            RoomHold[3].setCreature(SuperBats);
-
-            RoomHold[4].setCreature(Pit1);
-
-            RoomHold[5].setCreature(Pit2);*/
-
-        }
-
-        private void GameCycle()
-        {
-            
         }
     }
 }
