@@ -90,6 +90,22 @@ namespace HelloWorld
         {
             this.id = id;
         }
+
+        public Room getNextRoom(int roomNum)
+        {
+            Room room = null;
+            if (left.getRoomNum() == roomNum) {
+                room = left;
+            }
+            else if (right.getRoomNum() == roomNum) {
+                room = right;
+            }
+            else if (back.getRoomNum() == roomNum)
+            {
+                room = back;
+            }
+            return room;
+        }
         
     }
 }

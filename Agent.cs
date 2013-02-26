@@ -32,6 +32,7 @@ namespace HelloWorld
             this.room = room;
         }
 
+        /*
         public String[] move(int roomNum)
         {
             String[] result = null;
@@ -57,6 +58,7 @@ namespace HelloWorld
             }
             return result;
         }
+         * */
 
         public List<String> sense()
         {
@@ -142,7 +144,6 @@ namespace HelloWorld
             int[] roomPath = { leftRoomNum, rightRoomNum, backRoomNum };
             return roomPath;
         }
-
         public Room getNextRoom(int roomNum)
         {
             if (room.getLeft().getRoomNum() == roomNum)

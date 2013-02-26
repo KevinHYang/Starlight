@@ -32,6 +32,7 @@ namespace HelloWorld
         Wumpus wumpus = new Wumpus();
         Room room = new Room();
         Bat bat = new Bat();
+        GameStart gameStart = new GameStart();
 
         public MainPage()
         {
@@ -50,15 +51,14 @@ namespace HelloWorld
         /// session.  This will be null the first time a page is visited.</param>
         protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
         {
-            GameMain gameStart = new GameMain();
             gameStart.init();
-            agent = gameStart.getAgent();
+            //agent = gameStart.getAgent();
             Dictionary<int, Room> roomInfo = gameStart.getRooms();
             wumpus = gameStart.getWumpus();
             bat = gameStart.getBats();
             pit1 = gameStart.getPits()[0];
             pit2 = gameStart.getPits()[1];
-            int[] paths = agent.getRoomPath();
+            int[] paths = gameStart.getAgent().getRoomPath();
             optionA.Content = "Room " + paths[0];
             optionB.Content = "Room " + paths[1];
             optionC.Content = "Room " + paths[2];
@@ -67,12 +67,12 @@ namespace HelloWorld
                 int tmpKey = entry.Key;
                 Room tmpRoom = entry.Value;
                 consoleOutput.Text += "-----------------------\n";
-                consoleOutput.Text += "Key value is " + tmpKey + "\n";
+//                consoleOutput.Text += "Key value is " + tmpKey + "\n";
                 consoleOutput.Text += "Room number is " + tmpRoom.getRoomNum() + "\n";
-                consoleOutput.Text += "Room id is " + tmpRoom.getId() + "\n";
-                consoleOutput.Text += "Room left is " + tmpRoom.getLeft().getRoomNum() + "\n";
-                consoleOutput.Text += "Room right is " + tmpRoom.getRight().getRoomNum() + "\n";
-                consoleOutput.Text += "Room behind is " + tmpRoom.getBack().getRoomNum() + "\n";
+//                consoleOutput.Text += "Room id is " + tmpRoom.getId() + "\n";
+//                consoleOutput.Text += "Room left is " + tmpRoom.getLeft().getRoomNum() + "\n";
+//                consoleOutput.Text += "Room right is " + tmpRoom.getRight().getRoomNum() + "\n";
+//                consoleOutput.Text += "Room behind is " + tmpRoom.getBack().getRoomNum() + "\n";
                 if (tmpRoom.getCreature() != null)
                 {
                     consoleOutput.Text += "Contains " + tmpRoom.getCreature().getRole() + "\n";
@@ -117,14 +117,12 @@ namespace HelloWorld
             Button clicked = (Button)sender;
             String room = (String) clicked.Content;
             int roomNum = int.Parse(room.Substring(room.Length - 2));
-            int[] rmList = agent.getRoomPath();
-            optionA.Content = "Room " + rmList[0];
-            optionB.Content = "Room " + rmList[1];
-            optionC.Content = "Room " + rmList[2];
 
+            consoleOutput.Text = "Before Room:  " + gameStart.getAgent().getRoom().getRoomNum();
+//            consoleOutput.Text += "";
             if (player_mode.Equals(AgentMode.move))
             {
-                String[] result = agent.move(roomNum);
+                String[] result = gameStart.move(gameStart.getAgent(), roomNum);
                 //String[] result = { "2" };
                 if (result.Length == 1)
                 {
@@ -133,11 +131,11 @@ namespace HelloWorld
                     
                     rootFrame.Navigate(typeof(BasicPage1), gameOver);
                 }
-                consoleOutput.Text = "We moved to room " + agent.getRoom().getRoomNum() +"\n";
+                consoleOutput.Text += "We moved to room " + gameStart.getAgent().getRoom().getRoomNum() + "\n";
             }
             else if (player_mode.Equals(AgentMode.shoot))
             {
-                String result = agent.shoot(roomNum);
+                String result = gameStart.getAgent().shoot(roomNum);
                 //String result = "win";
                 if(result.Equals("win")){
                     gameOver = false;
@@ -151,7 +149,14 @@ namespace HelloWorld
             returnBtn.Visibility = Visibility.Collapsed;
             moveBtn.Visibility = Visibility.Visible;
             shootBtn.Visibility = Visibility.Visible;
-            loop();
+            int[] rmList = gameStart.getAgent().getRoomPath();
+            optionA.Content = "Room " + rmList[0];
+            optionB.Content = "Room " + rmList[1];
+            optionC.Content = "Room " + rmList[2];
+            consoleOutput.Text = "After  Room:  " + gameStart.getAgent().getRoom().getRoomNum();
+            consoleOutput.Text += "After  RoomPath:  " + gameStart.getAgent().getRoomPath()[0] + "," + gameStart.getAgent().getRoomPath()[1] + "," + gameStart.getAgent().getRoomPath()[2];
+//            consoleOutput.Text += "";
+            //loop();
         }
 
         private void Return_Select(object sender, RoutedEventArgs e)
@@ -164,7 +169,7 @@ namespace HelloWorld
             shootBtn.Visibility = Visibility.Visible;
             //App.Current.Exit();
 
-            consoleOutput.Text = "Currently in Room "+ agent.getRoom().getRoomNum();
+            consoleOutput.Text = "Currently in Room " + gameStart.getAgent().getRoom().getRoomNum();
         }
 
         private void loop()
@@ -174,7 +179,7 @@ namespace HelloWorld
             consoleOutput.Text += "Bat is in Room " + bat.getRoom().getRoomNum() + "\n";
             consoleOutput.Text += "Pit 1 is in Room " + pit1.getRoom().getRoomNum() + "\n";
             consoleOutput.Text += "Pit 2 is in Room " + pit2.getRoom().getRoomNum() + "\n";
-            List<String> sense = agent.sense();
+            List<String> sense = gameStart.getAgent().sense();
             if (sense != null)
             {
                 foreach (String s in sense)

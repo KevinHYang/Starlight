@@ -120,6 +120,7 @@
     <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Creature.cs" />
+    <Compile Include="ErrorCode.cs" />
     <Compile Include="GameStart.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
