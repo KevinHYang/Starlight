@@ -127,10 +127,15 @@ namespace HelloWorld
                 //String[] result = { "2" };
                 if (result.Length == 1)
                 {
-                    gameOver = true;
+                    String gameCode = result[0];
+                    String gameMsg = "";
+                    if (gameCode.Equals(ErrorCode.gameLost)) gameMsg = "Game Lost! "; //gameOver = true;
+                    if (gameCode.Equals(ErrorCode.creatureNotFound)) gameMsg = "Creature Not Found!";
+                    if (gameCode.Equals(ErrorCode.creatureMovementFailure)) gameMsg = "Creature Movement Failure!";
+                    if (gameCode.Equals(ErrorCode.roomNotFound)) gameMsg = "Room Not Found!";
+                    gameMsg += gameCode;
                     Frame rootFrame = Window.Current.Content as Frame;
-                    
-                    rootFrame.Navigate(typeof(BasicPage1), gameOver);
+                    rootFrame.Navigate(typeof(BasicPage1), gameMsg);
                 }
                 else if (result.Length == 3)
                 {
@@ -152,9 +157,9 @@ namespace HelloWorld
                 String result = gameStart.shoot(roomNum);
                 //String result = "win";
                 if(result.Equals("win")){
-                    gameOver = false;
+                    //gameOver = false;
                     Frame rootFrame = Window.Current.Content as Frame;
-                    rootFrame.Navigate(typeof(BasicPage1), gameOver);
+                    rootFrame.Navigate(typeof(BasicPage1), result);
                 } 
             }
             optionA.Visibility = Visibility.Collapsed;

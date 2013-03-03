@@ -69,7 +69,9 @@ namespace HelloWorld
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            gameOver = (Boolean)e.Parameter;
+            //gameOver = (Boolean)e.Parameter;
+            String gameMsg = (String)e.Parameter;
+            exitMessage.Text = gameMsg;
         }
     }
 }
