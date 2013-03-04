@@ -295,13 +295,13 @@ namespace HelloWorld
 
         }
 
-        public String[] move(Agent agent, int roomNum)
+        public String[] move(int roomNum)
         {
             String[] msg = null;
             Room curRoom = null;
             Room nextRoom = null;
-            agent = JamesBond;
-            if (agent.getRoom() == null)
+
+            if (JamesBond.getRoom() == null)
             {
                 return null;
             }
@@ -317,14 +317,23 @@ namespace HelloWorld
                 mobs = nextRoom.getCreature();
                 if (mobs != null)
                 {
-                    // Affect, temporary as lose
-                    if (agent.getRole().Equals("Agent"))
+                    if (!mobs.getRole().Equals("Bat"))
                     {
                         msg = new String[] { ErrorCode.gameLost };
                     }
                     else
                     {
-                        msg = new String[] { ErrorCode.creatureMovementFailure };
+                        teleportAgent();
+                        moveMonsters();
+                        msg = sense();
+                        if (msg[0].Equals("Empty"))
+                        {
+                            msg[0] = "You stepped into the room with SuperBats. You got teleported randomly...";
+                        }
+                        else
+                        {
+                            msg[0] = "You stepped into the room with SuperBats. You got teleported randomly...\n" + msg[0];
+                        }
                     }
                 }
                 else
@@ -335,40 +344,34 @@ namespace HelloWorld
                     nextRoom.setCreature(JamesBond);
                     // Clean up curRoom
                     curRoom.setCreature(null);
-
+                    moveMonsters();
                     // Once moved, sense
-                    if (agent.getRole().Equals("Agent"))
-                    {
-                        msg = sense(agent);
-                    }
+                    msg = sense();
                 }
             }
 
             return msg;
         }
 
-        private String[] sense(Agent agent)
+        private String[] sense()
         {
             String[] msg = null;
-            msg = new String[3];
+            msg = new String[]{ "Empty","Empty","Empty" };
             Random rnd = new Random();
 
             // Check all the rooms and return the rooms that have creatures in msg
-            if (agent.getRoom().getLeft().getCreature() != null)
+            if (JamesBond.getRoom().getLeft().getCreature() != null)
             {
-                msg[0] = roleMessage(agent.getRoom().getLeft().getCreature().getRole());
+                msg[0] = roleMessage(JamesBond.getRoom().getLeft().getCreature().getRole());
             }
-            else { msg[0] = "Empty";  }
-            if (agent.getRoom().getRight().getCreature() != null)
+            if (JamesBond.getRoom().getRight().getCreature() != null)
             {
-                msg[1] = roleMessage(agent.getRoom().getRight().getCreature().getRole());
+                msg[1] = roleMessage(JamesBond.getRoom().getRight().getCreature().getRole());
             }
-            else { msg[1] = "Empty"; }
-            if (agent.getRoom().getBack().getCreature() != null)
+            if (JamesBond.getRoom().getBack().getCreature() != null)
             {
-                msg[2] = roleMessage(agent.getRoom().getBack().getCreature().getRole());
+                msg[2] = roleMessage(JamesBond.getRoom().getBack().getCreature().getRole());
             }
-            else { msg[2] = "Empty"; }
 
             for (int i = 3; i > 1; i--)
             {
@@ -400,6 +403,25 @@ namespace HelloWorld
 
             return msg;
 
+        }
+
+        private void teleportAgent()
+        {
+            Random rand = new Random();
+            Boolean foundRoom = false;
+
+            while (!foundRoom)
+            {
+                int randomIndex = rand.Next(1, 20);
+
+                if (RoomHold[randomIndex].getCreature() == null)
+                {
+                    JamesBond.getRoom().setCreature(null);
+                    RoomHold[randomIndex].setCreature(JamesBond);
+                    JamesBond.setRoom(RoomHold[randomIndex]);
+                    foundRoom = true;
+                }
+            }
         }
 
         public String shoot(int roomNum)
@@ -461,6 +483,7 @@ namespace HelloWorld
             int[] roomPath = { leftRoomNum, rightRoomNum, backRoomNum };
             return roomPath;
         }
+
         private Room getNextRoom(int roomNum, Room currRoom)
         {
             // Check if the next room is to the left or to the right
@@ -475,6 +498,73 @@ namespace HelloWorld
             else
             {
                 return null;
+            }
+        }
+
+        public int getArrows()
+        {
+            return maxArrows;
+        }
+
+        private void moveMonsters() 
+        {
+            //move wumpus
+            moveWumpus();
+            //move bat
+            moveBats();
+        }
+
+        private void moveWumpus()
+        {
+            Room curRoom = null;
+            Room nextRoom = null;
+            curRoom = TheBeast.getRoom();
+            List<Room> roomList = new List<Room>();
+            roomList.Add(curRoom.getLeft());
+            roomList.Add(curRoom.getRight());
+            roomList.Add(curRoom.getBack());
+            int randRoomNum = (new Random().Next()) % roomList.Count();
+            nextRoom = roomList[randRoomNum];
+            roomList.RemoveAt(randRoomNum);
+            while (nextRoom.getCreature() != null && roomList.Count() > 0)
+            {
+                randRoomNum = (new Random().Next()) % roomList.Count();
+                nextRoom = roomList[randRoomNum];
+                roomList.RemoveAt(randRoomNum);
+            }
+
+            if (nextRoom.getCreature() == null)
+            {
+                TheBeast.setRoom(nextRoom);
+                nextRoom.setCreature(TheBeast);
+                curRoom.setCreature(null);
+            }
+        }
+
+        private void moveBats()
+        {
+            Room curRoom = null;
+            Room nextRoom = null;
+            curRoom = SuperBats.getRoom();
+            List<Room> roomList = new List<Room>();
+            roomList.Add(curRoom.getLeft());
+            roomList.Add(curRoom.getRight());
+            roomList.Add(curRoom.getBack());
+            int randRoomNum = (new Random().Next()) % roomList.Count();
+            nextRoom = roomList[randRoomNum];
+            roomList.RemoveAt(randRoomNum);
+            while (nextRoom.getCreature() != null && roomList.Count() > 0)
+            {
+                randRoomNum = (new Random().Next()) % roomList.Count();
+                nextRoom = roomList[randRoomNum];
+                roomList.RemoveAt(randRoomNum);
+            }
+
+            if (nextRoom.getCreature() == null)
+            {
+                SuperBats.setRoom(nextRoom);
+                nextRoom.setCreature(SuperBats);
+                curRoom.setCreature(null);
             }
         }
     }

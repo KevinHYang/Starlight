@@ -8,7 +8,7 @@ namespace HelloWorld
 {
     public class Bat : Monster
     {
-        public void bat()
+        public Bat()
         {
             role = "Bat";
         }
