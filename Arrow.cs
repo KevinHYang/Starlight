@@ -4,16 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClassLibrary1
+namespace HelloWorld
 {
     class Arrow : Creature
     {
-
         protected Room room;
-
-        public Arrow()
-        {
-        }
 
         public Arrow(Room room)
         {

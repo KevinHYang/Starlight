@@ -8,8 +8,8 @@ namespace HelloWorld
 {
     public class Agent : Creature
     {
-        protected int maxArrows = 5;
-        protected int maxRoomsToShoot = 5;
+        /*protected int maxArrows = 5;
+        protected int maxRoomsToShoot = 5;*/
         public Room room = null;
         public Agent()
         {
@@ -59,7 +59,7 @@ namespace HelloWorld
             return result;
         }
          * */
-
+        /*
         public List<String> sense()
         {
             List<String> senses = new List<String>();
@@ -94,7 +94,8 @@ namespace HelloWorld
             }
             return "";
         }
-
+        */
+        /*
         public String shoot(int roomNum)
         {
             Random random = new Random();
@@ -158,7 +159,7 @@ namespace HelloWorld
             {
                 return null;
             }
-        }
+        }*/
 
     }
 }

@@ -20,6 +20,9 @@ namespace HelloWorld
         Pit Pit1 = new Pit();
         Pit Pit2 = new Pit();
 
+        protected int maxArrows = 5;
+        protected int maxRoomsToShoot = 5;
+
         //some getters for the Rooms, Agent, Wumpus, and Bats. Debug purposes.
         public Dictionary<int, Room> getRooms()
         {
@@ -349,6 +352,7 @@ namespace HelloWorld
             String[] msg = null;
             msg = new String[3];
             Random rnd = new Random();
+
             // Check all the rooms and return the rooms that have creatures in msg
             if (agent.getRoom().getLeft().getCreature() != null)
             {
@@ -396,6 +400,82 @@ namespace HelloWorld
 
             return msg;
 
+        }
+
+        public String shoot(int roomNum)
+        {
+            Random random = new Random();
+            int nextRoomNum = 0;
+            Room[] rooms = new Room[5];
+            Room nextRoom = getNextRoom(roomNum, JamesBond.getRoom());
+
+            if (nextRoom == null)
+            {
+                return "Cannot Shoot";
+            }
+            maxArrows--;
+            rooms[0] = nextRoom;
+
+            int i = 1;
+            while (i < maxRoomsToShoot)
+            {
+                nextRoomNum = random.Next(1, 2);
+                if (nextRoomNum == 1)
+                {
+                    nextRoomNum = nextRoom.getLeft().getRoomNum();
+                }
+                else
+                {
+                    nextRoomNum = nextRoom.getRight().getRoomNum();
+                }
+                nextRoom = getNextRoom(nextRoomNum, rooms[i-1]);
+                rooms[i] = nextRoom;
+                i++;
+            }
+
+            for (int j = 0; j < rooms.Length; j++)
+            {
+                Creature creature = rooms[j].getCreature();
+
+                if (creature != null)
+                {
+                    String role = creature.getRole();
+                    if (role.Equals("Wumpus"))
+                    {
+                        return "win";
+                    }
+                }
+            }
+            if (maxArrows == 0)
+            {
+                return "lose";
+            }
+            return "Nothing happened";
+        }
+
+        public int[] getRoomPath()
+        {
+            int leftRoomNum = JamesBond.getRoom().getLeft().getRoomNum();
+            int rightRoomNum = JamesBond.getRoom().getRight().getRoomNum();
+            int backRoomNum = JamesBond.getRoom().getBack().getRoomNum();
+            int[] roomPath = { leftRoomNum, rightRoomNum, backRoomNum };
+            return roomPath;
+        }
+        private Room getNextRoom(int roomNum, Room currRoom)
+        {
+            // Check if the next room is to the left or to the right
+            if (currRoom.getLeft().getRoomNum() == roomNum)
+            {
+                return currRoom.getLeft();
+            }
+            else if (currRoom.getRight().getRoomNum() == roomNum)
+            {
+                return currRoom.getRight();
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
